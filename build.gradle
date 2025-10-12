@@ -1,0 +1,61 @@
+plugins {
+    id 'java'
+    id 'io.spring.dependency-management' version '1.1.6'
+}
+
+group = 'ru.vext.engine'
+version = '1.0-SNAPSHOT'
+
+project.ext.lwjglVersion = "3.3.4"
+project.ext.lwjglNatives = "natives-windows"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
+
+    implementation 'org.slf4j:slf4j-api:2.0.17'
+    implementation 'org.slf4j:slf4j-reload4j:2.0.17'
+    implementation 'org.joml:joml:1.10.5'
+    implementation 'com.google.code.findbugs:jsr305:3.0.2'
+    implementation 'net.objecthunter:exp4j:0.4.8'
+    implementation 'commons-io:commons-io:2.18.0'
+
+    compileOnly 'org.projectlombok:lombok:1.18.36'
+    annotationProcessor 'org.projectlombok:lombok:1.18.36'
+
+    implementation "org.lwjgl:lwjgl"
+    implementation "org.lwjgl:lwjgl-assimp"
+    implementation "org.lwjgl:lwjgl-glfw"
+    implementation "org.lwjgl:lwjgl-openal"
+    implementation "org.lwjgl:lwjgl-stb"
+    implementation "org.lwjgl:lwjgl-vulkan"
+    implementation "org.lwjgl:lwjgl-shaderc"
+    runtimeOnly "org.lwjgl:lwjgl::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-assimp::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-glfw::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-openal::$lwjglNatives"
+    runtimeOnly "org.lwjgl:lwjgl-stb::$lwjglNatives"
+}
+
+test {
+    useJUnitPlatform()
+}
+
+tasks.register('compileShaders') {
+    doFirst {
+        fileTree("./src/main/shader/").visit { FileVisitDetails details ->
+            exec {
+                workingDir './src/main/resources/shader/'
+                println(workingDir)
+                commandLine 'glslc', '../../shader/' + details.path, '-o', details.path + '.spv'
+            }
+        }
+    }
+}
+
+afterEvaluate {
+    tasks.compileJava.dependsOn(tasks.compileShaders)
+}
