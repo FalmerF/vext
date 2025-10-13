@@ -132,12 +132,15 @@ public class Drawer {
         try (MemoryStack stack = MemoryStack.stackPush()) {
             float scale = 24f / FontDrawer.FONT_SIZE;
             scale(scale, scale);
+
             GraphicsPipeline pipeline = swapChain.getGraphicsPipelines()[1];
             pipeline.bind(commandBuffer, frameIndex);
 
-            FloatBuffer pushConstantData = stack.mallocFloat(19);
+            FloatBuffer pushConstantData = stack.mallocFloat(21);
             pushConstantData.put(matrix.get(new float[16]));
             pushConstantData.put(color.getRGBColorComponents(null));
+            pushConstantData.put(FontDrawer.FONT_SIZE);
+            pushConstantData.put(FontDrawer.MAP_SIZE);
             pushConstantData.flip();
 
             vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, pushConstantData);
@@ -154,8 +157,8 @@ public class Drawer {
 
                 offsetX += glyph.getOffsetX();
                 glyphData[i] = (int) glyph.getCharacter();
-                offsetData[i] = offsetX;
-                offsetX += glyph.getWidth();
+                offsetData[i] = (float) Math.floor(offsetX);
+                offsetX += glyph.getAdvanceWidth();
             }
 
             MemoryBuffer glyphBuffer = frame.getBufferPool().createTemp(glyphData, BufferType.USAGE_VERTEX_TRANSFER_SRC, BufferType.MEMORY_TYPE_CPU_VISIBLE);

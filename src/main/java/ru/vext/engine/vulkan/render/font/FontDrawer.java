@@ -28,7 +28,8 @@ import static org.lwjgl.vulkan.VK10.VK_FORMAT_R8_UNORM;
 @Getter
 public class FontDrawer {
 
-    public static final int FONT_SIZE = 24;
+    public static final int FONT_SIZE = 64;
+    public static final int MAP_SIZE = 2048;
 
     private final Map<Character, Glyph> glyphs = new HashMap<>();
 
@@ -58,8 +59,8 @@ public class FontDrawer {
     }
 
     private void bakeFont(ByteBuffer fontData, MemoryStack stack) {
-        int width = 1024;
-        int height = 1024;
+        int width = MAP_SIZE;
+        int height = MAP_SIZE;
         ByteBuffer bitmap = MemoryUtil.memAlloc(width * height);
 
         STBTTBakedChar.Buffer backedChars = new STBTTBakedChar.Buffer(stack.malloc(0x04FF * STBTTBakedChar.SIZEOF));

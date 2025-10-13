@@ -8,6 +8,8 @@ layout(binding = 1) readonly buffer GlyphBuffer {
 layout(location = 0) in vec2 fragTexCoord;
 layout(location = 1) in vec3 fragColor;
 layout(location = 2) flat in int glyphIndex;
+layout(location = 3) flat in float glyphScale;
+layout(location = 4) flat in float sdfTexelSize;
 
 layout(location = 0) out vec4 outColor;
 
@@ -22,8 +24,10 @@ void main() {
 
     float distance = texture(sdfTexture, texCoord).r;
 
-    float smoothing = fwidth(distance) * 0.5;
-    float alpha = smoothstep(0.5 - smoothing, 0.5 + smoothing, distance);
+    float screenPixelSize = length(fwidth(texCoord) * sdfTexelSize);
+    float smoothing = 0.001 * screenPixelSize * glyphScale;
+
+    float alpha = smoothstep(0.49 - smoothing, 0.49 + smoothing, distance);
 
     outColor = vec4(fragColor, alpha);
 }

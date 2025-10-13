@@ -3,6 +3,8 @@
 layout(push_constant) uniform PushConstants {
     mat4 matrix;
     vec3 inColor;
+    float glyphScale;
+    float sdfTexelSize;
 } pushConstants;
 layout(binding = 1) readonly buffer GlyphBuffer {
     float data[];
@@ -14,6 +16,8 @@ layout(location = 1) in float offsetX;
 layout(location = 0) out vec2 fragTexCoord;
 layout(location = 1) out vec3 fragColor;
 layout(location = 2) flat out int _glyphIndex;
+layout(location = 3) flat out float _glyphScale;
+layout(location = 4) flat out float _sdfTexelSize;
 
 vec2 positions[4] = vec2[](
 vec2(0, -1),
@@ -42,4 +46,6 @@ void main() {
     fragColor = pushConstants.inColor;
 
     _glyphIndex = glyphIndex;
+    _glyphScale = pushConstants.glyphScale;
+    _sdfTexelSize = pushConstants.sdfTexelSize;
 }
