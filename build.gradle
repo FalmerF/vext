@@ -17,7 +17,7 @@ dependencies {
     implementation platform("org.lwjgl:lwjgl-bom:$lwjglVersion")
 
     implementation 'org.slf4j:slf4j-api:2.0.17'
-    implementation 'org.slf4j:slf4j-reload4j:2.0.17'
+    implementation 'ch.qos.logback:logback-classic:1.5.19'
     implementation 'org.joml:joml:1.10.5'
     implementation 'com.google.code.findbugs:jsr305:3.0.2'
     implementation 'net.objecthunter:exp4j:0.4.8'
