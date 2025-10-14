@@ -94,8 +94,7 @@ public class FontDrawer {
             IntBuffer y1 = stack.mallocInt(1);
             stbtt_GetGlyphBox(fontInfo, glyphIndex, x0, y0, x1, y1);
 
-            float baseline = ascent * fontScale;
-            float offsetY = baseline + (y0.get(0) * fontScale);
+            float offsetY = y0.get(0) * fontScale;
 
             Float[] minMaxUV = new Float[]{
                     (float) bakedChar.x0() / width,

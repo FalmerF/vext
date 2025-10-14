@@ -128,9 +128,12 @@ public class Drawer {
 
     }
 
-    public void drawText(CharSequence text, Color color) {
+    public void drawText(CharSequence text, float fontSize, Color color) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
-            float scale = 24f / FontDrawer.FONT_SIZE;
+
+            translate(0, fontSize);
+
+            float scale = fontSize / 24;
             scale(scale, scale);
 
             GraphicsPipeline pipeline = swapChain.getGraphicsPipelines()[1];

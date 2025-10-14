@@ -5,7 +5,6 @@ import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
 import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 import ru.vext.engine.vulkan.VkApplication;
 import ru.vext.engine.vulkan.render.font.FontDrawer;
-import ru.vext.engine.vulkan.swapchain.pipeline.descriptor.DescriptorPool;
 import ru.vext.engine.vulkan.swapchain.pipeline.descriptor.layout.DescriptorSetLayout;
 
 import static org.lwjgl.vulkan.VK10.*;
@@ -24,7 +23,7 @@ public class FontGraphicsPipeline extends GraphicsPipeline {
         VkVertexInputBindingDescription.Buffer inputBindings = VkVertexInputBindingDescription.calloc(2, stack);
 
         configureInputBinding(inputBindings.get(0), 0, Float.BYTES, VK_VERTEX_INPUT_RATE_INSTANCE);
-        configureInputBinding(inputBindings.get(1), 1, Integer.BYTES, VK_VERTEX_INPUT_RATE_INSTANCE);
+        configureInputBinding(inputBindings.get(1), 1, Float.BYTES, VK_VERTEX_INPUT_RATE_INSTANCE);
 
         return inputBindings;
     }

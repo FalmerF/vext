@@ -40,19 +40,23 @@ public class SimpleTest extends VextApplication {
 //        panel1.addChildren(panel2);
 //        scene.addChildren(panel1);
 
+        Panel horizontalLine = new Panel();
+        horizontalLine.setSize("100%", "5px");
+        horizontalLine.setAnchor(Anchor.CENTER);
+        horizontalLine.setColor(Color.RED);
+
         Text text1 = new Text("Это тестовое сообщение, которое демонстрирует возможности рендера !!??.../,,,");
         text1.setColor(new Color(0f, 0f, 0f));
-        text1.setAnchor(Anchor.LEFT_TOP);
-        text1.setOffset("50px", "50% - 100px");
-        text1.setScale(2);
+        text1.setAnchor(Anchor.LEFT);
+        text1.setOffset("50px", "64px");
         scene.addChildren(text1);
 
         Text text2 = new Text("Это тестовое сообщение, которое демонстрирует возможности рендера !!??.../,,,");
         text2.setColor(new Color(0f, 0f, 0f));
-        text2.setAnchor(Anchor.LEFT_TOP);
-        text2.setOffset("50px", "50% + 100px");
-        text2.setScale(4);
-        scene.addChildren(text2);
+        text2.setAnchor(Anchor.LEFT);
+        text2.setOffset("50px", "0");
+        text2.setFontSize(48);
+        scene.addChildren(horizontalLine, text2);
 
         setScene(scene);
     }
