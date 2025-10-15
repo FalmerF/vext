@@ -1,8 +1,13 @@
 package ru.vext.engine.vulkan;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import lombok.Setter;
+import ru.vext.engine.VextApplication;
 import ru.vext.engine.component.Scene;
+import ru.vext.engine.resource.IResource;
+import ru.vext.engine.resource.ResourceStorage;
+import ru.vext.engine.resource.ResourceType;
 import ru.vext.engine.util.MemoryUtil;
 import ru.vext.engine.vulkan.buffer.DefaultBuffers;
 import ru.vext.engine.vulkan.fabric.InstanceFabric;
@@ -11,7 +16,7 @@ import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
 import ru.vext.engine.vulkan.render.RenderPipeline;
-import ru.vext.engine.vulkan.render.font.FontDrawer;
+import ru.vext.engine.resource.font.BakedFont;
 import ru.vext.engine.vulkan.swapchain.pipeline.graphics.DefaultGraphicsPipeline;
 import ru.vext.engine.vulkan.swapchain.pipeline.graphics.GraphicsPipeline;
 import ru.vext.engine.vulkan.swapchain.SwapChain;
@@ -35,6 +40,7 @@ import static org.lwjgl.vulkan.VK10.*;
 
 @Slf4j
 @Getter
+@RequiredArgsConstructor
 public class VkApplication {
 
     private static final boolean ENABLE_VALIDATION_LAYERS = false;
@@ -81,6 +87,8 @@ public class VkApplication {
 
     }
 
+    private final ResourceStorage resourceStorage;
+
     private long window;
 
     private int width = 800, height = 600;
@@ -105,18 +113,10 @@ public class VkApplication {
     @Setter
     private boolean framebufferResized;
 
-    private FontDrawer defaultFontDrawer;
-
     @Setter
     private Scene scene;
 
-    public VkApplication(String windowTitle) {
-        log.info("Initializing Vulkan Application");
-        initWindow(windowTitle);
-        initVulkan(new InstanceFabric());
-    }
-
-    private void initWindow(String windowTitle) {
+    public void initWindow(String windowTitle) {
         if (!glfwInit()) {
             throw new RuntimeException("Cannot initialize GLFW");
         }
@@ -140,7 +140,7 @@ public class VkApplication {
         });
     }
 
-    private void initVulkan(InstanceFabric instanceFabric) {
+    public void initVulkan(InstanceFabric instanceFabric) {
         instance = instanceFabric.createInstance(ENABLE_VALIDATION_LAYERS, List.of("VK_LAYER_KHRONOS_validation"));
         setupDebugMessenger();
         createSurface();
@@ -150,23 +150,38 @@ public class VkApplication {
 
         defaultBuffers = new DefaultBuffers(this);
         defaultBuffers.create();
+    }
 
-        defaultFontDrawer = new FontDrawer(this, Objects.requireNonNull(VkApplication.class.getResourceAsStream("/fonts/segoeui.ttf")));
+    public void initRenderPipeline() {
+        Map<String, GraphicsPipeline> graphicsPipelineMap = createGraphicsPipelines();
 
-        swapChain = new SwapChain(this, new GraphicsPipeline[]{
-                new DefaultGraphicsPipeline(
-                        this, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
-                        "/shader/default-triangle-strip.vert", "/shader/default.frag"
-                ),
-                new FontGraphicsPipeline(
-                        this, defaultFontDrawer,
-                        "/shader/font.vert", "/shader/font.frag"
-                )
-        });
+        swapChain = new SwapChain(this, graphicsPipelineMap);
         swapChain.create();
 
         renderPipeline = new RenderPipeline(this, swapChain, MAX_FRAMES_IN_FLIGHT);
         renderPipeline.create();
+    }
+
+    private Map<String, GraphicsPipeline> createGraphicsPipelines() {
+        Map<String, GraphicsPipeline> graphicsPipelineMap = new HashMap<>();
+        graphicsPipelineMap.put("default",
+                new DefaultGraphicsPipeline(
+                        this, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP,
+                        "/shader/default-triangle-strip.vert", "/shader/default.frag"
+                )
+        );
+
+        Collection<IResource> fonts = resourceStorage.findResourcesByType(ResourceType.FONT);
+        for (IResource fontResource : fonts) {
+            String key = "font-" + fontResource.getKey();
+            FontGraphicsPipeline fontGraphicsPipeline = new FontGraphicsPipeline(
+                    this, (BakedFont) fontResource,
+                    "/shader/font.vert", "/shader/font.frag"
+            );
+            graphicsPipelineMap.put(key, fontGraphicsPipeline);
+        }
+
+        return graphicsPipelineMap;
     }
 
     public void recreateSwapChain() {
@@ -207,7 +222,7 @@ public class VkApplication {
 
     public void cleanup() {
         swapChain.cleanup();
-        defaultFontDrawer.cleanup();
+        resourceStorage.cleanup();
         defaultBuffers.cleanup();
         renderPipeline.cleanup();
 

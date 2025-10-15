@@ -1,3 +1,5 @@
+package ru.vext.engine.test;
+
 import ru.vext.engine.VextApplication;
 import ru.vext.engine.component.Panel;
 import ru.vext.engine.component.Scene;

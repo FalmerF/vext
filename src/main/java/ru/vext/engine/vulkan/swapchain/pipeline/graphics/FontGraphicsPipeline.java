@@ -1,21 +1,23 @@
 package ru.vext.engine.vulkan.swapchain.pipeline.graphics;
 
+import lombok.Getter;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkVertexInputAttributeDescription;
 import org.lwjgl.vulkan.VkVertexInputBindingDescription;
 import ru.vext.engine.vulkan.VkApplication;
-import ru.vext.engine.vulkan.render.font.FontDrawer;
+import ru.vext.engine.resource.font.BakedFont;
 import ru.vext.engine.vulkan.swapchain.pipeline.descriptor.layout.DescriptorSetLayout;
 
 import static org.lwjgl.vulkan.VK10.*;
 
+@Getter
 public class FontGraphicsPipeline extends GraphicsPipeline {
 
-    private final FontDrawer fontDrawer;
+    private final BakedFont bakedFont;
 
-    public FontGraphicsPipeline(VkApplication vkApplication, FontDrawer fontDrawer, String... shaderPaths) {
+    public FontGraphicsPipeline(VkApplication vkApplication, BakedFont font, String... shaderPaths) {
         super(vkApplication, VK_PRIMITIVE_TOPOLOGY_TRIANGLE_STRIP, shaderPaths);
-        this.fontDrawer = fontDrawer;
+        this.bakedFont = font;
     }
 
     @Override
@@ -41,8 +43,8 @@ public class FontGraphicsPipeline extends GraphicsPipeline {
     @Override
     protected DescriptorSetLayout createSetLayout() {
         return DescriptorSetLayout.builder()
-                .addImageBinding(fontDrawer.getImageView(), VK_SHADER_STAGE_FRAGMENT_BIT)
-                .addGpuBufferBinding(fontDrawer.getDataBuffer(), VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT)
+                .addImageBinding(bakedFont.getImageView(), VK_SHADER_STAGE_FRAGMENT_BIT)
+                .addGpuBufferBinding(bakedFont.getDataBuffer(), VK_SHADER_STAGE_FRAGMENT_BIT | VK_SHADER_STAGE_VERTEX_BIT)
                 .build();
     }
 }

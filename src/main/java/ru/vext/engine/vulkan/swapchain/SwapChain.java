@@ -16,6 +16,7 @@ import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static org.lwjgl.system.MemoryStack.stackPush;
@@ -31,7 +32,7 @@ public class SwapChain {
     private final VkApplication vkApplication;
     private final VkDevice device;
 
-    private final GraphicsPipeline[] graphicsPipelines;
+    private final Map<String, GraphicsPipeline> graphicsPipelines;
 
     private long id;
     private List<Long> images;
@@ -44,12 +45,12 @@ public class SwapChain {
     private long renderPass;
 
     @Builder
-    public SwapChain(VkApplication vkApplication, GraphicsPipeline[] graphicsPipelines) {
+    public SwapChain(VkApplication vkApplication, Map<String, GraphicsPipeline> graphicsPipelines) {
         this.vkApplication = vkApplication;
         this.device = vkApplication.getDevice();
         this.graphicsPipelines = graphicsPipelines;
 
-        for (GraphicsPipeline pipeline : graphicsPipelines) {
+        for (GraphicsPipeline pipeline : graphicsPipelines.values()) {
             pipeline.setSwapChain(this);
         }
     }
@@ -72,7 +73,7 @@ public class SwapChain {
             vkFreeCommandBuffers(device, vkApplication.getCommandPool(), MemoryUtil.asPointerBuffer(stack, commandBuffers));
         }
 
-        for (GraphicsPipeline pipeline : graphicsPipelines) {
+        for (GraphicsPipeline pipeline : graphicsPipelines.values()) {
             pipeline.cleanup();
         }
         vkDestroyRenderPass(device, renderPass, null);
@@ -254,7 +255,7 @@ public class SwapChain {
     }
 
     private void createGraphicsPipelines() {
-        for (GraphicsPipeline pipeline : graphicsPipelines) {
+        for (GraphicsPipeline pipeline : graphicsPipelines.values()) {
             pipeline.create();
         }
     }
@@ -301,5 +302,9 @@ public class SwapChain {
             for (int i = 0; i < commandBuffersCount; i++)
                 commandBuffers.add(new VkCommandBuffer(pCommandBuffers.get(i), device));
         }
+    }
+
+    public GraphicsPipeline getGraphicsPipeline(String key) {
+        return graphicsPipelines.get(key);
     }
 }

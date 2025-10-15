@@ -2,19 +2,19 @@ package ru.vext.engine.vulkan.render;
 
 import lombok.extern.slf4j.Slf4j;
 import org.joml.*;
-import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkExtent2D;
+import ru.vext.engine.resource.font.FontLoader;
 import ru.vext.engine.util.Unit;
-import ru.vext.engine.util.VextUtil;
 import ru.vext.engine.vulkan.VkApplication;
 import ru.vext.engine.vulkan.buffer.BufferType;
 import ru.vext.engine.vulkan.buffer.MemoryBuffer;
-import ru.vext.engine.vulkan.render.font.FontDrawer;
-import ru.vext.engine.vulkan.render.font.Glyph;
+import ru.vext.engine.resource.font.BakedFont;
+import ru.vext.engine.resource.font.Glyph;
 import ru.vext.engine.vulkan.swapchain.SwapChain;
+import ru.vext.engine.vulkan.swapchain.pipeline.graphics.FontGraphicsPipeline;
 import ru.vext.engine.vulkan.swapchain.pipeline.graphics.GraphicsPipeline;
 
 import java.awt.*;
@@ -113,7 +113,7 @@ public class Drawer {
 
             MemoryBuffer positionBuffer = frame.getBufferPool().createTemp(positions, BufferType.USAGE_VERTEX, BufferType.MEMORY_TYPE_CPU_VISIBLE);
 
-            GraphicsPipeline pipeline = swapChain.getGraphicsPipelines()[0];
+            GraphicsPipeline pipeline = swapChain.getGraphicsPipeline("default");
             pipeline.bind(commandBuffer, frameIndex);
 
             FloatBuffer pushConstantData = stack.mallocFloat(16);
@@ -136,20 +136,20 @@ public class Drawer {
             float scale = fontSize / 24;
             scale(scale, scale);
 
-            GraphicsPipeline pipeline = swapChain.getGraphicsPipelines()[1];
+            FontGraphicsPipeline pipeline = (FontGraphicsPipeline) swapChain.getGraphicsPipeline("font-font/segoeui.ttf");
             pipeline.bind(commandBuffer, frameIndex);
 
             FloatBuffer pushConstantData = stack.mallocFloat(21);
             pushConstantData.put(matrix.get(new float[16]));
             pushConstantData.put(color.getRGBColorComponents(null));
-            pushConstantData.put(FontDrawer.FONT_SIZE);
-            pushConstantData.put(FontDrawer.MAP_SIZE);
+            pushConstantData.put(FontLoader.FONT_SIZE);
+            pushConstantData.put(FontLoader.MAP_SIZE);
             pushConstantData.flip();
 
             vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, pushConstantData);
 
-            FontDrawer fontDrawer = vkApplication.getDefaultFontDrawer();
-            Glyph[] glyphs = fontDrawer.getGlyphs(text);
+            BakedFont bakedFont = pipeline.getBakedFont();
+            Glyph[] glyphs = bakedFont.getGlyphs(text);
 
             Integer[] glyphData = new Integer[glyphs.length];
             Float[] offsetData = new Float[glyphs.length];

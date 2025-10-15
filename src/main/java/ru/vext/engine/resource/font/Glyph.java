@@ -1,4 +1,4 @@
-package ru.vext.engine.vulkan.render.font;
+package ru.vext.engine.resource.font;
 
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
