@@ -6,4 +6,8 @@ public interface IDrawable {
 
     void drawPipeline(Drawer drawer);
 
+    void markDirty();
+
+    boolean isDirty();
+
 }

@@ -63,7 +63,7 @@ public class SwapChain {
         createFrameBuffers();
         createCommandBuffers();
 
-        Optional.ofNullable(vkApplication.getScene()).ifPresent(scene -> scene.setDirty(true));
+        Optional.ofNullable(vkApplication.getScene()).ifPresent(Scene::markDirty);
     }
 
     public void cleanup() {

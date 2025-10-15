@@ -1,5 +1,6 @@
 package ru.vext.engine.component.base;
 
+import ru.vext.engine.component.Scene;
 import ru.vext.engine.util.Anchor;
 
 import java.awt.*;
@@ -9,6 +10,10 @@ public interface IComponent extends IDrawable {
     void setParent(IParent parent);
 
     IParent getParent();
+
+    void setScene(Scene scene);
+
+    Scene getScene();
 
     void setWidth(String width);
 

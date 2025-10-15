@@ -6,6 +6,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.VkCommandBuffer;
 import org.lwjgl.vulkan.VkDevice;
 import org.lwjgl.vulkan.VkExtent2D;
+import ru.vext.engine.resource.ResourceStorage;
 import ru.vext.engine.resource.font.FontLoader;
 import ru.vext.engine.util.Unit;
 import ru.vext.engine.vulkan.VkApplication;
@@ -128,7 +129,7 @@ public class Drawer {
 
     }
 
-    public void drawText(CharSequence text, float fontSize, Color color) {
+    public void drawText(CharSequence text, String font, float fontSize, Color color) {
         try (MemoryStack stack = MemoryStack.stackPush()) {
 
             translate(0, fontSize);
@@ -136,7 +137,10 @@ public class Drawer {
             float scale = fontSize / 24;
             scale(scale, scale);
 
-            FontGraphicsPipeline pipeline = (FontGraphicsPipeline) swapChain.getGraphicsPipeline("font-font/segoeui.ttf");
+            ResourceStorage resourceStorage = vkApplication.getResourceStorage();
+            BakedFont bakedFont = resourceStorage.getFont(font);
+
+            FontGraphicsPipeline pipeline = (FontGraphicsPipeline) swapChain.getGraphicsPipeline("font-" + bakedFont.getKey());
             pipeline.bind(commandBuffer, frameIndex);
 
             FloatBuffer pushConstantData = stack.mallocFloat(21);
@@ -148,7 +152,6 @@ public class Drawer {
 
             vkCmdPushConstants(commandBuffer, pipeline.getPipelineLayout(), VK_SHADER_STAGE_VERTEX_BIT, 0, pushConstantData);
 
-            BakedFont bakedFont = pipeline.getBakedFont();
             Glyph[] glyphs = bakedFont.getGlyphs(text);
 
             Integer[] glyphData = new Integer[glyphs.length];

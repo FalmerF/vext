@@ -54,6 +54,19 @@ public class BakedFont implements IResource {
         return glyphsArray;
     }
 
+    public float getTextWidth(CharSequence text, float fontSize) {
+        Glyph[] glyphs = getGlyphs(text);
+
+        float width = 0;
+
+        for (Glyph glyph : glyphs) {
+            width += glyph.getOffsetX();
+            width += glyph.getAdvanceWidth();
+        }
+
+        return width * (fontSize / 24);
+    }
+
     @Override
     public ResourceType getType() {
         return ResourceType.FONT;

@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 public abstract class VextApplication {
 
     private final VkApplication vkApplication;
+    private final StyleProperties styleProperties;
     private final ResourceStorage resourceStorage;
     private final ResourceLoader resourceLoader;
 
@@ -25,7 +26,11 @@ public abstract class VextApplication {
     public VextApplication(String windowTitle) {
         log.info("Initializing Vext Application");
 
-        resourceStorage = new ResourceStorage();
+        styleProperties = StyleProperties.builder()
+                .font(StyleProperties.DEFAULT_FONT)
+                .build();
+
+        resourceStorage = new ResourceStorage(styleProperties);
 
         vkApplication = new VkApplication(resourceStorage);
         vkApplication.initWindow(windowTitle);
@@ -41,7 +46,7 @@ public abstract class VextApplication {
 
         vkApplication.initRenderPipeline();
 
-        setScene(new Scene());
+        setScene(new Scene(this));
 
         initialize();
 
@@ -50,7 +55,6 @@ public abstract class VextApplication {
     }
 
     public void setScene(Scene scene) {
-        scene.setVkApplication(vkApplication);
         this.scene = scene;
         vkApplication.setScene(scene);
     }
