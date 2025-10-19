@@ -73,8 +73,6 @@ public class Text extends AbstractComponent {
         BakedFont bakedFont = resourceStorage.getFont(font);
         float width = bakedFont.getTextWidth(text, fontSize);
         super.setWidth(Math.floor(width) + "px");
-
-        log.info("Font {}, width: {}, height: {}", font, getWidth(), getHeight());
     }
 
     @SneakyThrows

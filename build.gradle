@@ -47,7 +47,7 @@ test {
 jar {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     manifest {
-        attributes 'Main-Class': 'ru.vext.engine.test.SimpleTest',
+        attributes 'Main-Class': 'ru.vext.engine.test.MainTest',
                 'Implementation-Version': project.version,
                 'Implementation-Title': project.name
     }

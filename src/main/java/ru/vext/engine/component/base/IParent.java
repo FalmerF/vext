@@ -19,11 +19,15 @@ public interface IParent {
 
     Collection<IComponent> getChildren();
 
-    String getExternalWidth();
+    float getExternalWidth();
 
-    String getExternalHeight();
+    float getExternalHeight();
 
-    String getInternalWidth();
+    float getInternalWidth();
 
-    String getInternalHeight();
+    float getInternalHeight();
+
+    float calculateWidth();
+
+    float calculateHeight();
 }

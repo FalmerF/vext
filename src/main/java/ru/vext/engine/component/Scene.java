@@ -43,22 +43,32 @@ public class Scene extends AbstractParent implements IDrawable {
     }
 
     @Override
-    public String getExternalWidth() {
-        return vkApplication.getWidth() + "px";
+    public float getExternalWidth() {
+        return vkApplication.getWidth();
     }
 
     @Override
-    public String getExternalHeight() {
-        return vkApplication.getHeight() + "px";
+    public float getExternalHeight() {
+        return vkApplication.getHeight();
     }
 
     @Override
-    public String getInternalWidth() {
-        return vkApplication.getWidth() + "px";
+    public float getInternalWidth() {
+        return vkApplication.getWidth();
     }
 
     @Override
-    public String getInternalHeight() {
-        return vkApplication.getHeight() + "px";
+    public float getInternalHeight() {
+        return vkApplication.getHeight();
+    }
+
+    @Override
+    public float calculateWidth() {
+        return vkApplication.getWidth();
+    }
+
+    @Override
+    public float calculateHeight() {
+        return vkApplication.getHeight();
     }
 }

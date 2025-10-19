@@ -16,8 +16,9 @@ public class Unit {
 
     private static final Pattern EXPRESSION_PATTERN = Pattern.compile("([0-9%px.]+)");
     private static final Pattern EXPRESSION_FIND_PATTERN = Pattern.compile("([0-9%px.\\(\\)]+)([+\\-*/]+)");
+    private static final Pattern PERCENT_PATTERN = Pattern.compile("([0-9.]+%)");
 
-    public static float getScreenValue(String value, int size) {
+    public static float getScreenValue(String value, float size) {
         if (value == null || value.isEmpty() || value.equals("0")) {
             return 0;
         }
@@ -31,7 +32,7 @@ public class Unit {
         }
     }
 
-    public static float parseExpression(String expression, int size) {
+    public static float parseExpression(String expression, float size) {
         Matcher matcher = EXPRESSION_PATTERN.matcher(expression);
 
         expression = matcher.replaceAll(result -> {
@@ -43,7 +44,7 @@ public class Unit {
         return (float) e.evaluate();
     }
 
-    public static float parseValue(String value, int size) {
+    public static float parseValue(String value, float size) {
         Format format = parseFormat(value);
         Matcher matcher = format.getPattern().matcher(value);
         if (matcher.find()) {
@@ -67,6 +68,11 @@ public class Unit {
         }
 
         throw new IllegalArgumentException("Invalid value format: " + value);
+    }
+
+    public static String removePercents(String value) {
+        Matcher matcher = PERCENT_PATTERN.matcher(value);
+        return matcher.replaceAll("0");
     }
 
     @Getter

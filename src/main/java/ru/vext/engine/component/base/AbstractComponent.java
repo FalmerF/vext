@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import ru.vext.engine.component.Scene;
 import ru.vext.engine.util.Anchor;
+import ru.vext.engine.util.Unit;
 import ru.vext.engine.vulkan.render.Drawer;
 
 import java.awt.*;
@@ -35,23 +36,47 @@ public abstract class AbstractComponent extends AbstractParent implements ICompo
     private Anchor anchor = Anchor.LEFT_TOP;
 
     @Override
-    public String getExternalWidth() {
-        return String.format("(%s+%s+%s)", width, marginLeft, marginRight);
+    public float getExternalWidth() {
+        String expression = String.format("(%s+%s+%s)", calculateWidth(), marginLeft, marginRight);
+        return Unit.getScreenValue(expression, getParentWidth());
     }
 
     @Override
-    public String getExternalHeight() {
-        return String.format("(%s+%s+%s)", height, marginTop, marginBottom);
+    public float getExternalHeight() {
+        String expression = String.format("(%s+%s+%s)", calculateHeight(), marginTop, marginBottom);
+        return Unit.getScreenValue(expression, getParentHeight());
     }
 
     @Override
-    public String getInternalWidth() {
-        return String.format("(%s-%s-%s)", width, paddingLeft, paddingRight);
+    public float getInternalWidth() {
+        String expression = String.format("(%s-%s-%s)", calculateWidth(), paddingLeft, paddingRight);
+        return Unit.getScreenValue(expression, getParentWidth());
     }
 
     @Override
-    public String getInternalHeight() {
-        return String.format("(%s-%s-%s)", height, paddingTop, paddingBottom);
+    public float getInternalHeight() {
+        String expression = String.format("(%s-%s-%s)", calculateHeight(), paddingTop, paddingBottom);
+        return Unit.getScreenValue(expression, getParentHeight());
+    }
+
+    @Override
+    public float calculateWidth() {
+        float parentWidth = getParentWidth();
+        return Unit.getScreenValue(getWidth(), (int) parentWidth);
+    }
+
+    @Override
+    public float calculateHeight() {
+        float parentHeight = getParentHeight();
+        return Unit.getScreenValue(getHeight(), (int) parentHeight);
+    }
+
+    protected float getParentWidth() {
+        return parent == null ? 0 : parent.getInternalWidth();
+    }
+
+    protected float getParentHeight() {
+        return parent == null ? 0 : parent.getInternalHeight();
     }
 
     @Override
@@ -220,13 +245,8 @@ public abstract class AbstractComponent extends AbstractParent implements ICompo
         drawer.pushMatrix();
 
         drawer.translate(
-                String.format("%s*%s", parent.getInternalWidth(), anchor.x()),
-                String.format("%s*%s", parent.getInternalHeight(), anchor.y())
-        );
-
-        drawer.translate(
-                String.format("%s*%s", getExternalWidth(), -anchor.x()),
-                String.format("%s*%s", getExternalHeight(), -anchor.y())
+                (parent.getInternalWidth() * anchor.x()) + (getExternalWidth() * -anchor.x()),
+                (parent.getInternalHeight() * anchor.y()) + (getExternalHeight() * -anchor.y())
         );
 
         drawer.translate(offsetX, offsetY);

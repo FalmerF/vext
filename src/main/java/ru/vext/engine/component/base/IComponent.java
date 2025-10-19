@@ -23,6 +23,10 @@ public interface IComponent extends IDrawable {
 
     String getHeight();
 
+    float calculateWidth();
+
+    float calculateHeight();
+
     default void setSize(String size) {
         setWidth(size);
         setHeight(size);

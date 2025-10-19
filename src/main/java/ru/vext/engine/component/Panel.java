@@ -9,6 +9,6 @@ public class Panel extends AbstractComponent {
 
     @Override
     public void draw(Drawer drawer) {
-        drawer.drawQuad(getWidth(), getHeight(), getColor());
+        drawer.drawQuad(calculateWidth(), calculateHeight(), getColor());
     }
 }
