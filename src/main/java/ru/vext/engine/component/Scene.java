@@ -11,12 +11,17 @@ import ru.vext.engine.component.base.IDrawable;
 import ru.vext.engine.vulkan.VkApplication;
 import ru.vext.engine.vulkan.render.Drawer;
 
+import java.awt.*;
+
 @Slf4j
 @Getter
 public class Scene extends AbstractParent implements IDrawable {
 
     private final VkApplication vkApplication;
     private final VextApplication vextApplication;
+
+    @Setter
+    private Color backgroundColor = Color.WHITE;
 
     @Getter
     private boolean isDirty = true;
@@ -60,6 +65,16 @@ public class Scene extends AbstractParent implements IDrawable {
     @Override
     public float getInternalHeight() {
         return vkApplication.getHeight();
+    }
+
+    @Override
+    public float getMaxInternalWidth() {
+        return getInternalWidth();
+    }
+
+    @Override
+    public float getMaxInternalHeight() {
+        return getInternalHeight();
     }
 
     @Override

@@ -27,6 +27,18 @@ public interface IParent {
 
     float getInternalHeight();
 
+    float getMaxInternalWidth();
+
+    float getMaxInternalHeight();
+
+    default float getAnchorWidthMultiplier() {
+        return 1;
+    }
+
+    default float getAnchorHeightMultiplier() {
+        return 1;
+    }
+
     float calculateWidth();
 
     float calculateHeight();

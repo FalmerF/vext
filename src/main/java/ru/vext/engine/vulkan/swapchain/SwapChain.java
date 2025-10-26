@@ -2,6 +2,7 @@ package ru.vext.engine.vulkan.swapchain;
 
 import lombok.Builder;
 import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 import org.lwjgl.PointerBuffer;
 import org.lwjgl.system.MemoryStack;
 import org.lwjgl.vulkan.*;
@@ -26,6 +27,7 @@ import static org.lwjgl.vulkan.KHRSwapchain.*;
 import static org.lwjgl.vulkan.KHRSwapchain.vkGetSwapchainImagesKHR;
 import static org.lwjgl.vulkan.VK10.*;
 
+@Slf4j
 @Getter
 public class SwapChain {
 
@@ -134,8 +136,6 @@ public class SwapChain {
 
             id = pSwapChain.get(0);
 
-            vkGetSwapchainImagesKHR(device, id, imageCount, null);
-
             LongBuffer pSwapchainImages = stack.mallocLong(imageCount.get(0));
 
             vkGetSwapchainImagesKHR(device, id, imageCount, pSwapchainImages);
@@ -152,7 +152,7 @@ public class SwapChain {
     }
 
     private VkSurfaceFormatKHR chooseSwapSurfaceFormat(VkSurfaceFormatKHR.Buffer availableFormats) {
-        return availableFormats.stream().filter(availableFormat -> availableFormat.format() == VK_FORMAT_B8G8R8A8_UNORM).filter(availableFormat -> availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR).findAny().orElse(availableFormats.get(0));
+        return availableFormats.stream().filter(availableFormat -> availableFormat.format() == VK_FORMAT_R8G8B8A8_UNORM).filter(availableFormat -> availableFormat.colorSpace() == VK_COLOR_SPACE_SRGB_NONLINEAR_KHR).findAny().orElse(availableFormats.get(0));
     }
 
     private int chooseSwapPresentMode(IntBuffer availablePresentModes) {

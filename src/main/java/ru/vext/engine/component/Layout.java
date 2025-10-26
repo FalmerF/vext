@@ -39,11 +39,16 @@ public class Layout extends Panel {
         String width = getWidth();
 
         if ("auto".equals(width)) {
+            float value;
             if (orientation == Orientation.HORIZONTAL) {
-                return getPrimaryLength(Orientation.HORIZONTAL);
+                value = getPrimaryLength(Orientation.HORIZONTAL);
             } else {
-                return getSecondaryLength(Orientation.HORIZONTAL);
+                value = getSecondaryLength(Orientation.HORIZONTAL);
             }
+
+            float parentWidth = getParentWidth();
+            String expression = String.format("(%s+%s+%s)", value, getPaddingLeft(), getPaddingRight());
+            return Unit.getScreenValue(expression, parentWidth);
         }
 
         return super.calculateWidth();
@@ -54,11 +59,16 @@ public class Layout extends Panel {
         String height = getHeight();
 
         if ("auto".equals(height)) {
+            float value;
             if (orientation == Orientation.VERTICAL) {
-                return getPrimaryLength(Orientation.VERTICAL);
+                value = getPrimaryLength(Orientation.VERTICAL);
             } else {
-                return getSecondaryLength(Orientation.VERTICAL);
+                value = getSecondaryLength(Orientation.VERTICAL);
             }
+
+            float parentHeight = getParentHeight();
+            String expression = String.format("(%s+%s+%s)", value, getPaddingTop(), getPaddingBottom());
+            return Unit.getScreenValue(expression, parentHeight);
         }
 
         return super.calculateHeight();
@@ -86,7 +96,7 @@ public class Layout extends Panel {
     }
 
     @Override
-    public float getInternalWidth() {
+    public float getMaxInternalWidth() {
         String widthExpression = super.getWidth();
 
         if ("auto".equals(widthExpression)) {
@@ -95,20 +105,30 @@ public class Layout extends Panel {
             return Unit.getScreenValue(expression, widthFloat);
         }
 
-        return super.getInternalWidth();
+        return super.getMaxInternalWidth();
     }
 
     @Override
-    public float getInternalHeight() {
+    public float getMaxInternalHeight() {
         String heightExpression = super.getHeight();
 
         if ("auto".equals(heightExpression)) {
             float heightFloat = getParentHeight();
-            String expression = String.format("(%s-%s-%s)", heightFloat, getPaddingLeft(), getPaddingRight());
+            String expression = String.format("(%s-%s-%s)", heightFloat, getPaddingTop(), getPaddingBottom());
             return Unit.getScreenValue(expression, heightFloat);
         }
 
-        return super.getInternalHeight();
+        return super.getMaxInternalHeight();
+    }
+
+    @Override
+    public float getAnchorWidthMultiplier() {
+        return orientation == Orientation.HORIZONTAL ? 0 : 1;
+    }
+
+    @Override
+    public float getAnchorHeightMultiplier() {
+        return orientation == Orientation.VERTICAL ? 0 : 1;
     }
 
     @Override

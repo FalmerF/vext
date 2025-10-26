@@ -60,6 +60,16 @@ public abstract class AbstractComponent extends AbstractParent implements ICompo
     }
 
     @Override
+    public float getMaxInternalWidth() {
+        return getInternalWidth();
+    }
+
+    @Override
+    public float getMaxInternalHeight() {
+        return getInternalHeight();
+    }
+
+    @Override
     public float calculateWidth() {
         float parentWidth = getParentWidth();
         return Unit.getScreenValue(getWidth(), (int) parentWidth);
@@ -72,11 +82,11 @@ public abstract class AbstractComponent extends AbstractParent implements ICompo
     }
 
     protected float getParentWidth() {
-        return parent == null ? 0 : parent.getInternalWidth();
+        return parent == null ? 0 : parent.getMaxInternalWidth();
     }
 
     protected float getParentHeight() {
-        return parent == null ? 0 : parent.getInternalHeight();
+        return parent == null ? 0 : parent.getMaxInternalHeight();
     }
 
     @Override
@@ -245,8 +255,8 @@ public abstract class AbstractComponent extends AbstractParent implements ICompo
         drawer.pushMatrix();
 
         drawer.translate(
-                (parent.getInternalWidth() * anchor.x()) + (getExternalWidth() * -anchor.x()),
-                (parent.getInternalHeight() * anchor.y()) + (getExternalHeight() * -anchor.y())
+                ((parent.getInternalWidth() * anchor.x()) + (getExternalWidth() * -anchor.x())) * parent.getAnchorWidthMultiplier(),
+                ((parent.getInternalHeight() * anchor.y()) + (getExternalHeight() * -anchor.y())) * parent.getAnchorHeightMultiplier()
         );
 
         drawer.translate(offsetX, offsetY);

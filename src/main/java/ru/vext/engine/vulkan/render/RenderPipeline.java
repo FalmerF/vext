@@ -7,6 +7,8 @@ import ru.vext.engine.component.Scene;
 import ru.vext.engine.vulkan.VkApplication;
 import ru.vext.engine.vulkan.swapchain.SwapChain;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.nio.IntBuffer;
 import java.nio.LongBuffer;
 import java.util.ArrayList;
@@ -177,9 +179,14 @@ public class RenderPipeline {
             renderArea.extent(swapChain.getExtent());
             renderPassInfo.renderArea(renderArea);
 
-            VkClearValue.Buffer clearValues = VkClearValue.calloc(1, stack);
-            clearValues.color().float32(stack.floats(1.0f, 1.0f, 1.0f, 1.0f));
-            clearValues.depthStencil().depth(1);
+            Scene scene = vkApplication.getScene();
+
+            Color backgroundColor = scene == null ? Color.WHITE : scene.getBackgroundColor();
+            float[] color = backgroundColor.getRGBColorComponents(new float[4]);
+
+            VkClearValue.Buffer clearValues = VkClearValue.calloc(2, stack);
+            clearValues.get(0).color().float32(stack.floats(color));
+            clearValues.get(1).depthStencil().depth(1);
             renderPassInfo.pClearValues(clearValues);
 
             if (vkBeginCommandBuffer(commandBuffer, beginInfo) != VK_SUCCESS)
@@ -203,7 +210,6 @@ public class RenderPipeline {
 
             vkCmdBeginRenderPass(commandBuffer, renderPassInfo, VK_SUBPASS_CONTENTS_INLINE);
             {
-                Scene scene = vkApplication.getScene();
                 if (scene != null) {
                     scene.drawPipeline(drawer);
                 }
